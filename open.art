@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenArt AI - Automated Video Editing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5649c9;
+            --secondary: #a29bfe;
+            --dark: #1e1e2e;
+            --darker: #151521;
+            --light: #f8f9fa;
+            --gray: #8a8aa0;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--light);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: rgba(30, 30, 46, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--light);
+        }
+        
+        .logo i {
+            color: var(--primary);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline:hover {
+            background: rgba(108, 92, 231, 0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero p {
+            font-size: 20px;
+            max-width: 700px;
+            margin: 0 auto 40px;
+            color: var(--gray);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 50px;
+        }
+        
+        .hero-demo {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .demo-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .demo-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .demo-card i {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 50px 0;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .upload-section, .results-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--primary);
+        }
+        
+        .upload-area {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .upload-subtext {
+            font-size: 14px;
+            opacity: 0.7;
+        }
+        
+        .options {
+            margin: 25px 0;
+        }
+        
+        .option-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .option-label i {
+            color: var(--primary);
+        }
+        
+        select, input[type="text"] {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            padding: 8px 15px;
+            color: white;
+            width: 150px;
+        }
+        
+        option {
+            background: var(--dark);
+        }
+        
+        .process-btn {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .process-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+        }
+        
+        .process-btn:active {
+            transform: translateY(0);
+        }
+        
+        .process-btn i {
+            margin-right: 10px;
+        }
+        
+        .results-placeholder {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.7;
+        }
+        
+        .results-placeholder i {
+            font-size: 60px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .processing {
+            text-align: center;
+            padding: 30px 20px;
+            display: none;
+        }
+        
+        .processing i {
+            font-size: 50px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .result-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .video-thumb {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(45deg, var(--darker), var(--dark));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .video-info {
+            flex-grow: 1;
+        }
+        
+        .video-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .video-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .video-stats span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 5px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            background: rgba(108, 92, 231, 0.3);
+        }
+        
+        .export-section {
+            margin-top: 30px;
+            text-align: center;
+            display: none;
+        }
+        
+        .export-btn {
+            background: linear-gradient(45deg, var(--success), #00a382);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.4);
+        }
+        
+        .export-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 80px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .feature-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-desc {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--darker);
+            padding: 40px 0;
+            margin-top: 80px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-column a:hover {
+            color: var(--primary);
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--light);
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <span>OpenArt AI</span>
+                </div>
+                
+                <nav>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Examples</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="auth-buttons">
+                    <button class="btn btn-outline">Sign In</button>
+                    <button class="btn btn-primary">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>AI-Powered Video Editing Revolution</h1>
+            <p>Transform your raw footage into engaging content with our advanced artificial intelligence. No editing skills required.</p>
+            
+            <div class="hero-buttons">
+                <button class="btn btn-primary">Get Started Free</button>
+                <button class="btn btn-outline">Watch Demo</button>
+            </div>
+            
+            <div class="hero-demo">
+                <div class="demo-card">
+                    <i class="fas fa-robot"></i>
+                    <h3>AI Analysis</h3>
+                    <p>Smart content detection and scene analysis</p>
+                </div>
+                
+                <div class="demo-card">
+                    <i class="fas fa-film"></i>
+                    <h3>Auto Editing</h3>
+                    <p>Automatic cuts, transitions, and effects</p>
+                </div>
+                
+                <div class="demo-card">
+                    <i class="fas fa-magic"></i>
+                    <h3>Style Transfer</h3>
+                    <p>Apply artistic styles to your videos</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="upload-section">
+                <h2 class="section-title"><i class="fas fa-upload"></i> Upload Your Videos</h2>
+                
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p class="upload-text">Drag & drop your videos here</p>
+                    <p class="upload-subtext">or click to browse files (Max 10GB)</p>
+                </div>
+                
+                <div class="options">
+                    <div class="option-row">
+                        <div class="option-label">
+                            <i class="fas fa-palette"></i>
+                            <span>Editing Style</span>
+                        </div>
+                        <select id="editStyle">
+                            <option>Cinematic</option>
+                            <option>Vlog</option>
+                            <option>Social Media</option>
+                            <option>Documentary</option>
+                            <option>Gaming</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-row">
+                        <div class="option-label">
+                            <i class="fas fa-clock"></i>
+                            <span>Video Length</span>
+                        </div>
+                        <select id="videoLength">
+                            <option>Short (15-30s)</option>
+                            <option>Medium (1-2min)</option>
+                            <option>Long (5-10min)</option>
+                            <option>Original Length</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-row">
+                        <div class="option-label">
+                            <i class="fas fa-music"></i>
+                            <span>Soundtrack</span>
+                        </div>
+                        <select id="soundtrack">
+                            <option>Upbeat</option>
+                            <option>Chill</option>
+                            <option>Epic</option>
+                            <option>No Music</option>
+                            <option>Custom</option>
+                        </select>
+                    </div>
+                    
+                    <div class="option-row">
+                        <div class="option-label">
+                            <i class="fas fa-font"></i>
+                            <span>Text & Captions</span>
+                        </div>
+                        <select id="textStyle">
+                            <option>Auto-Generate</option>
+                            <option>Minimal</option>
+                            <option>Bold</option>
+                            <option>Animated</option>
+                            <option>None</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="process-btn" id="processBtn">
+                    <i class="fas fa-cogs"></i> Process with AI
+                </button>
+            </div>
+            
+            <div class="results-section">
+                <h2 class="section-title"><i class="fas fa-video"></i> AI-Edited Results</h2>
+                
+                <div class="results-placeholder" id="resultsPlaceholder">
+                    <i class="fas fa-film"></i>
+                    <p>Your AI-edited videos will appear here</p>
+                </div>
+                
+                <div class="processing" id="processing">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <h3>AI is editing your video</h3>
+                    <p>Analyzing content, applying edits, and adding effects...</p>
+                    
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                    <p id="progressText">0% complete</p>
+                </div>
+                
+                <div id="resultsContainer"></div>
+                
+                <div class="export-section" id="exportSection">
+                    <button class="export-btn" id="exportBtn">
+                        <i class="fas fa-download"></i> Download Edited Video
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-title">AI-Powered Analysis</h3>
+                <p class="feature-desc">Our advanced AI analyzes your footage to identify the best moments, faces, and scenes automatically.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <h3 class="feature-title">Smart Editing</h3>
+                <p class="feature-desc">Automatically remove silences, shaky footage, and blurry shots while keeping the best content.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <h3 class="feature-title">Style Transfer</h3>
+                <p class="feature-desc">Apply different visual styles to your videos, from cinematic looks to artistic filters.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <h3 class="feature-title">Audio Enhancement</h3>
+                <p class="feature-desc">Automatically balance audio levels, reduce background noise, and add fitting music.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-subscript"></i>
+                </div>
+                <h3 class="feature-title">Auto Captions</h3>
+                <p class="feature-desc">Generate accurate captions and subtitles for your videos in multiple languages.</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 class="feature-title">Fast Processing</h3>
+                <p class="feature-desc">Edit hours of footage in minutes with our cloud-powered AI processing.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>OpenArt AI</h3>
+                    <p>Revolutionizing video editing with artificial intelligence for creators of all levels.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Product</h3>
+                    <ul>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Examples</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">API</a></li>
+                        <li><a href="#">Download</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 OpenArt AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const processBtn = document.getElementById('processBtn');
+            const resultsPlaceholder = document.getElementById('resultsPlaceholder');
+            const processing = document.getElementById('processing');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            const resultsContainer = document.getElementById('resultsContainer');
+            const exportSection = document.getElementById('exportSection');
+            const exportBtn = document.getElementById('exportBtn');
+            
+            // Mock video data for demonstration
+            const mockResults = [
+                { 
+                    title: "Cinematic Recap", 
+                    duration: "0:45",
+                    style: "Cinematic",
+                    size: "45MB"
+                },
+                { 
+                    title: "Social Media Highlights", 
+                    duration: "1:15",
+                    style: "Social Media",
+                    size: "62MB"
+                },
+                { 
+                    title: "Slow Motion Montage", 
+                    duration: "0:58",
+                    style: "Cinematic",
+                    size: "78MB"
+                }
+            ];
+            
+            // Upload area click handler
+            uploadArea.addEventListener('click', function() {
+                alert("In a real application, this would open a file dialog to select videos.");
+            });
+            
+            // Process button click handler
+            processBtn.addEventListener('click', function() {
+                // Show processing UI
+                resultsPlaceholder.style.display = 'none';
+                processing.style.display = 'block';
+                resultsContainer.innerHTML = '';
+                exportSection.style.display = 'none';
+                
+                // Simulate AI processing with progress
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 5;
+                    if (progress >= 100) {
+                        progress = 100;
+                        clearInterval(interval);
+                        
+                        // Show results after processing is complete
+                        setTimeout(showResults, 500);
+                    }
+                    
+                    progressBar.style.width = progress + '%';
+                    progressText.textContent = Math.round(progress) + '% complete';
+                }, 200);
+            });
+            
+            // Export button click handler
+            exportBtn.addEventListener('click', function() {
+                alert("Your video has been downloaded! In a real application, this would download the edited video.");
+            });
+            
+            // Show results function
+            function showResults() {
+                processing.style.display = 'none';
+                
+                // Create result items for each video
+                mockResults.forEach((video, index) => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'result-item';
+                    resultItem.innerHTML = `
+                        <div class="video-thumb">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${video.title}</div>
+                            <div class="video-stats">
+                                <span><i class="fas fa-clock"></i> ${video.duration}</span>
+                                <span><i class="fas fa-palette"></i> ${video.style}</span>
+                                <span><i class="fas fa-database"></i> ${video.size}</span>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button class="action-btn"><i class="fas fa-play"></i></button>
+                            <button class="action-btn"><i class="fas fa-download"></i></button>
+                            <button class="action-btn"><i class="fas fa-share"></i></button>
+                        </div>
+                    `;
+                    
+                    resultsContainer.appendChild(resultItem);
+                });
+                
+                // Show export section
+                exportSection.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
